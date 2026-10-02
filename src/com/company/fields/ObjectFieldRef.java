@@ -1,37 +1,14 @@
 package com.company.fields;
-
-import com.company.reflectors.DeSerialisationReflector;
-import com.company.reflectors.SerialisationReflector;
-
 import java.lang.reflect.Field;
-
+import com.company.Json1035;
 public class ObjectFieldRef extends FieldRef {
-
-    public ObjectFieldRef(Field field) {
-        super(field);
-    }
-
-    @Override
+    public ObjectFieldRef(Field field) {super(field);}
     public String toJson(Object instance) {
-        try {
-            Object value = field.get(instance);
-            if (value == null) {
-                return "\"" + getName() + "\": null";
-            }
-            // Correction : Passer "value" au constructeur de SerialisationReflector
-            return "\"" + getName() + "\": " + new SerialisationReflector(value).toJson(value);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Erreur lors de la sérialisation du champ objet : " + field.getName(), e);
-        }
+        try {return Json1035.quote(getName())+":"+new Json1035().serialize(field.get(instance));}
+        catch(IllegalAccessException e){throw new IllegalArgumentException(e);}
     }
-
-    @Override
-    public void fromJson(String value, Object instance) {
-        try {
-            Object subInstance = new DeSerialisationReflector<>(value, field.getType()).fromJson();
-            field.set(instance, subInstance);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Erreur lors de la désérialisation du champ objet : " + field.getName(), e);
-        }
+    public void fromJson(String value,Object instance) {
+        try {field.set(instance,new Json1035().deserializeType(value,field.getGenericType()));}
+        catch(IllegalAccessException e){throw new IllegalArgumentException(e);}
     }
 }

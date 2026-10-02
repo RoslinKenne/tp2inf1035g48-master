@@ -8,6 +8,8 @@ public class Address {
     private String postalCode;
 
 
+    public Address() {}
+
     public Address(String city, String postalCode) {
         this.city = city;
         this.postalCode = postalCode;

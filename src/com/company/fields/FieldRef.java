@@ -11,7 +11,8 @@ public abstract class FieldRef {
     }
 
     public String getName() {
-        return field.getName();
+        var alias=field.getAnnotation(com.company.annotations.Alias.class);
+        return alias==null || alias.value().isEmpty()?field.getName():alias.value();
     }
 
     public abstract String toJson(Object instance);

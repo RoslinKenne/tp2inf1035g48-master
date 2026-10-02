@@ -18,12 +18,14 @@ public class Programme {
         do {
             afficherMenuPrincipal();
             choix = lireEntreeEntier("Entrez votre choix : ");
+            try {
             switch (choix) {
                 case 1 -> serialiser(json1035);
                 case 2 -> deserialiser(json1035);
                 case 3 -> System.out.println("Au revoir!");
                 default -> System.out.println("Choix invalide. Veuillez réessayer.");
             }
+            } catch (IllegalArgumentException e) { System.out.println("JSON invalide : " + e.getMessage()); }
         } while (choix != 3);
     }
 
@@ -109,8 +111,8 @@ public class Programme {
         System.out.println(" Detailde la Personne ");
         System.out.println("Nom : " + person.getName());
         System.out.println("Âge : " + person.getAge());
-        System.out.println("Hobbies : " + String.join(", ", person.getHobbies()));
-        afficherAdresse(person.getAddress());
+        System.out.println("Hobbies : " + (person.getHobbies() == null ? "" : String.join(", ", person.getHobbies())));
+        if (person.getAddress() != null) afficherAdresse(person.getAddress());
     }
 
     private static void afficherAdresse(Address address) {
@@ -125,6 +127,7 @@ public class Programme {
         while (!valide) {
             try {
                 System.out.print(message);
+                if (!scanner.hasNextLine()) return 3;
                 result = Integer.parseInt(scanner.nextLine());
                 valide = true;
             } catch (NumberFormatException e) {

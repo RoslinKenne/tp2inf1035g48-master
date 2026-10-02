@@ -1,34 +1,14 @@
 package com.company.fields;
 import java.lang.reflect.Field;
-
+import com.company.Json1035;
 public class SimpleFieldRef extends FieldRef {
-
-    public SimpleFieldRef(Field field) {
-        super(field);
-    }
-
-    @Override
+    public SimpleFieldRef(Field field) {super(field);}
     public String toJson(Object instance) {
-        try {
-            Object value = field.get(instance);
-            return "\"" + getName() + "\": \"" + value + "\"";
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Erreur lors de la sérialisation du champ simple : " + field.getName(), e);
-        }
+        try {return Json1035.quote(getName())+":"+new Json1035().serialize(field.get(instance));}
+        catch(IllegalAccessException e){throw new IllegalArgumentException(e);}
     }
-
-    @Override
-    public void fromJson(String value, Object instance) {
-        try {
-            if (field.getType() == int.class || field.getType() == Integer.class) {
-                field.set(instance, Integer.parseInt(value));
-            } else if (field.getType() == String.class) {
-                field.set(instance, value);
-            } else if (field.getType() == boolean.class || field.getType() == Boolean.class) {
-                field.set(instance, Boolean.parseBoolean(value));
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Erreur lors de la désérialisation du champ simple : " + field.getName(), e);
-        }
+    public void fromJson(String value,Object instance) {
+        try {field.set(instance,new Json1035().deserializeType(value,field.getGenericType()));}
+        catch(IllegalAccessException e){throw new IllegalArgumentException(e);}
     }
 }
